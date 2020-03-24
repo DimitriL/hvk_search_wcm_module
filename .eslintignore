@@ -1,0 +1,6 @@
+app/pelorus-auth/**
+coverage/**
+docs/**
+node_modules/**
+public/app/bower_components/**
+swagger/**

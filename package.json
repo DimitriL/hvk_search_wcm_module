@@ -1,0 +1,94 @@
+{
+    "name": "@wcm/hvksearch",
+    "version": "0.1",
+    "description": "Search module for Huis van het Kind",
+    "main": "app",
+    "scripts": {
+        "test": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir ./coverage ./node_modules/.bin/_mocha -- -R spec -t 15000 --recursive --slow 2"
+    },
+    "keywords": [
+        "elasticSearch",
+        "search",
+        "Pelorus",
+        "CMS",
+        "WCM"
+    ],
+    "wcmModule": {
+        "angularDirPath": "public/app/",
+        "moduleConfig": {
+            "angularModule": "hvksearch",
+            "translationKey": "Search",
+            "operationType": "hvksearch",
+            "icon": "search",
+            "type": "system",
+            "navigationItem": true,
+            "authentication": {
+                "requiresLogin": true
+            }
+        },
+        "variables": [
+            {
+                "group": "Config",
+                "key": "hvksearch",
+                "accordion": true,
+                "variables": [
+                    {
+                        "label": "Elastic hostname",
+                        "description": "Hostname (uri) of the elastic server",
+                        "key": "host",
+                        "value": "localhost",
+                        "type": "text",
+                        "required": true
+                    },
+                    {
+                        "label": "Elastic port",
+                        "description": "Port of the elastic server",
+                        "key": "port",
+                        "value": 9200,
+                        "type": "number",
+                        "required": true
+                    },
+                    {
+                        "label": "Elastic index name",
+                        "description": "The elastic index to store to",
+                        "key": "index",
+                        "value": "hvk-search",
+                        "type": "text",
+                        "required": true
+                    }
+                ]
+            }
+        ]
+    },
+    "author": "Dimitri Leonidas",
+    "license": "ISC",
+    "dependencies": {
+        "@wcm/module-helper": "1.0.0",
+        "elasticsearch": "~13.2.0",
+        "lodash": "~4.17.4",
+        "node-cron": "^1.2.1",
+        "node-uuid": "~1.4.8",
+        "rootpath": "^0.1.2",
+        "striptags": "^3.0.1"
+    },
+    "devDependencies": {
+        "@district01/eslint-config": "~1.0.0",
+        "apidoc-swagger": "git+https://github.com/JvJefke/apidoc-swagger.git",
+        "chai": "~3.5.0",
+        "eslint": "~3.19.0",
+        "gulp": "~3.9.1",
+        "gulp-angular-templatecache": "~2.0.0",
+        "gulp-apidoc": "~0.2.0",
+        "gulp-apidoc-swagger": "~0.2.2",
+        "gulp-replace": "~0.5.4",
+        "install": "~0.8.4",
+        "istanbul": "~0.4.5",
+        "jshint": "~2.9.4",
+        "mocha": "~3.4.1",
+        "mockery": "~2.0.0",
+        "mongoose": "~4.9.9",
+        "nock": "~9.0.13",
+        "node-uuid": "~1.4.8",
+        "rewire": "~2.5.2"
+    }
+}

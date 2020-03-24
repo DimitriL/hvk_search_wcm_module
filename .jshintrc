@@ -1,0 +1,56 @@
+{
+    // Define globals exposed by Node.js.
+    "node": true,
+
+    // Prohibit use of bitwise operators
+    "bitwise": false,
+
+    // Requires to always put curly braces around blocks
+    "curly": true,
+
+    // Prohibit use of == and != in favor of === and !==.
+    "eqeqeq": true,
+
+    // Prohibit use of a variable before it is defined.
+    "latedef": true,
+
+    // Enforce placing 'use strict' at the top function scope
+    "strict": false,
+
+    // Prohibit use of explicitly undeclared variables.
+    "undef": true,
+
+    // Warn when variables are defined but never used.
+    "unused": "vars",
+
+    // Prohibit overwriting prototypes of native objects
+    "freeze": true,
+
+    // Suppress warnings about == null comparisons.
+    "eqnull": true,
+
+    // Prohibit use of double and single quotes
+    "quotmark": true,
+
+    // Define globals, especially for unit tests
+    "globals": {
+        "_": true,
+        "$": true,
+        "document": true,
+        "window": true,
+        "describe": true,
+        "before": true,
+        "after": true
+    },
+
+    // Predefined variables
+    "predef": [
+        "angular"
+    ],
+
+    // Allow expressions, especially for unit tests
+    "expr": true,
+
+    // Allow mocha variables
+    "mocha": true
+}
