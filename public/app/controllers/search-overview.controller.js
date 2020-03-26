@@ -1,7 +1,7 @@
 "use strict";
 
 angular
-	.module("hvksearch_0.1.controllers")
+	.module("hvksearch_0.1.0.controllers")
 	.controller("hvksearchOverviewController", [
 		"$scope",
 		"$timeout",

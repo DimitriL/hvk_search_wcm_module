@@ -2,16 +2,16 @@
 
 var syncAll = require("../helpers/syncAll");
 var indicesHelper = require("../helpers/indices");
-var mappings = require("../config/mappings");
+var contentMapping = require("../config/mappings/content");
 
 module.exports.reindexAll = function(req, res) {
 	var elasticsearch = require("../helpers/elastic");
-
 	indicesHelper
 		.remove(elasticsearch.client, elasticsearch.index)
 		.then(indicesHelper.createOrUpdate.bind(null, elasticsearch.client, {
 			index: elasticsearch.index,
-			mappings: mappings,
+			mapping: contentMapping,
+			type: "content"
 		}))
 		.then(syncAll);
 

@@ -2,7 +2,7 @@
 
 require("rootpath")();
 var elasticsearch = require("elasticsearch");
-var mappings = require("../config/mappings");
+var contentMapping = require("../config/mappings/content");
 var variablesHelper = require("../helpers/variables");
 var indicesHelper = require("./indices");
 
@@ -37,10 +37,10 @@ var initiateClient = function initiateClient() {
 				}
 
 				me.connected = true;
-
 				indicesHelper.createOrUpdate(me.client, {
 					index: me.index,
-					mappings: mappings,
+					mapping: contentMapping,
+					type: 'content'
 				});
 			});
 		});
@@ -50,7 +50,6 @@ function ElasticClient() {
 	this.client = null;
 	this.connected = false;
 	this.index = null;
-
 	initiateClient.call(this);
 }
 

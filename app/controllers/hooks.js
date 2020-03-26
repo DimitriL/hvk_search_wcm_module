@@ -31,7 +31,6 @@ var onEnabled = function onEnabled() {
 var onLoadComplete = function onLoadComplete() {
 	// Setup listeners
 	listeners.start();
-
 	onConfigurationChanged();
 };
 

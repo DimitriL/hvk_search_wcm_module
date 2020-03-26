@@ -1,25 +1,10 @@
 var Emitter = require("@wcm/module-helper").emitter;
 
 var contentTypes = require("../helpers/contentTypes");
-var productHelper = require("../helpers/product");
 var docHelper = require("../helpers/doc");
 
 var actions = {
-	product: {
-		fetch: productHelper.fetchProduct,
-		sync: productHelper.syncProduct,
-		remove: productHelper.removeProduct,
-	},
-	main_documentation: { // eslint-disable-line camelcase
-		fetch: docHelper.fetchDoc,
-		sync: productHelper.syncProduct,
-		remove: productHelper.removeProduct,
-	},
-	news_item: { // eslint-disable-line camelcase
-		fetch: docHelper.fetchDoc,
-		sync: productHelper.syncProduct,
-		remove: productHelper.removeProduct,
-	},
+	
 };
 
 function verifyAction(action, contentType) {
@@ -86,16 +71,12 @@ function onContentRemoved(contentItem) {
 
 module.exports.start = function start() {
 	Emitter.on("content.created", onContentCreated);
-
 	Emitter.on("content.updated", onContentUpdated);
-
 	Emitter.on("content.removed", onContentRemoved);
 };
 
 module.exports.stop = function stop() {
 	Emitter.removeListener("content.created", onContentCreated);
-
 	Emitter.removeListener("content.updated", onContentUpdated);
-
 	Emitter.removeListener("content.removed", onContentRemoved);
 };

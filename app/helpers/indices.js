@@ -17,14 +17,27 @@ var createIndex = function createIndex(client, index) {
 		}, function onError(responseError) {
 			// Check if mapping does not exists
 			if (responseError.status === 404) {
-				// Create new mapping
+				// Create new index
 				return client.indices.create({
-					index: index.index,
-					body: {
-						mappings: index.mappings,
-						settings: index.settings,
-					},
-				});
+					index: index.index
+				}).then(function onSuccess(){
+					console.log('index has been created')
+					return client.indices.putMapping({
+						index: index.index,
+						type: index.type,
+						body: index.mapping,
+						include_type_name: true
+					}).then(function onSuccess(){
+						console.log('mapping was added');
+						return true;						
+					}, function onError(responseError){
+						console.log('Mapping could not be added.');
+						console.log(responseError);
+					});	
+				}, function onError(responseError){
+					console.log('Index could not be created');
+					console.log(responseError);
+				});				
 			}
 
 			throw responseError;
