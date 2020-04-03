@@ -107,6 +107,7 @@ function docExists(uuid, elasticsearch) {
 }
 
 function syncDoc(doc, elasticsearch) {
+	console.log(elasticsearch);
 	return docExists(verifyUuid(doc), elasticsearch, "doc")
 		.then(function(exists) {
 			return exists ? updateDoc(doc, elasticsearch) : createDoc(doc, elasticsearch);
@@ -167,7 +168,7 @@ function transformDoc(doc) {
 			tags: doc.meta.taxonomy.tags,
 		},
 	};
-	//console.log(doc.fields.paragrafen);
+
 	var fields = {
 		titel: doc.fields.titel,
 		introtekst: doc.fields.introtekst || null,		
@@ -310,5 +311,6 @@ module.exports = {
 	populateDoc: populateDoc,
 	parseDoc: parseDoc,
 	syncDocs: syncDocs, 
-	syncDoc: syncDoc
+	syncDoc: syncDoc,
+	removeDoc: removeDoc
 };

@@ -4,12 +4,14 @@ var searchRoutes = require("./routes/search");
 var variablesHelper = require("./helpers/variables");
 
 module.exports = function(app, hooks, info) {
+	
 	variablesHelper.reload(info)
 		.finally(function() {
 			// Initiate elastic
 			require("./helpers/elastic").reload();
 
 			// Setup hooks
+			console.log('HOOKS')
 			require("./controllers/hooks")(hooks);
 
 			// start cronjobs

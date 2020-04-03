@@ -5,6 +5,7 @@ var listeners = require("../controllers/listeners");
 
 var onConfigurationChanged = function onConfigurationChanged() {
 	// Reload config
+	console.log("config reloaded");
 	variablesHelper.reload()
 		.then(function() {
 			elastic.reload();
@@ -29,6 +30,7 @@ var onEnabled = function onEnabled() {
 };
 
 var onLoadComplete = function onLoadComplete() {
+	console.log('loaded');
 	// Setup listeners
 	listeners.start();
 	onConfigurationChanged();

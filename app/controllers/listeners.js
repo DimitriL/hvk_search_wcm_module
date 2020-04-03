@@ -3,19 +3,25 @@ var Emitter = require("@wcm/module-helper").emitter;
 var contentTypes = require("../helpers/contentTypes");
 var docHelper = require("../helpers/doc");
 
-var actions = {
-	
-};
 
-function verifyAction(action, contentType) {
-	if (actions.hasOwnProperty(contentType.type) && actions[contentType.type].hasOwnProperty(action)) {
-		return actions[contentType.type][action];
+function onContentCreated(contentItem) {
+	console.log('Content created');
+	console.log(contentItem);
+	var contentType = contentTypes.verifyType(contentItem.meta.contentType);
+	if (!contentType) {
+		return console.log("CONTENTTYPE NOT ALLOWED", contentType);
 	}
-
-	return null;
+	var elasticsearch = require("../helpers/elastic");
+	try {
+		docHelper.syncDoc(contentItem, elasticsearch);
+	} catch (err) {
+		console.log(err);
+	}
 }
 
-function handleUpdate(contentItem, action) {
+function onContentUpdated(contentItem) {
+	console.log('Content updated');
+	console.log(contentItem);
 	var contentType = contentTypes.verifyType(contentItem.meta.contentType);
 
 	if (!contentType) {
@@ -23,53 +29,30 @@ function handleUpdate(contentItem, action) {
 	}
 
 	var elasticsearch = require("../helpers/elastic");
-	var syncAction = verifyAction(action, contentType);
-	var fetchAction = verifyAction("fetch", contentType);
-
-	if (!syncAction) {
-		return productHelper.fetchProductsForDoc(docHelper.parseDoc(contentType, contentItem), elasticsearch)
-			.then(function(products) {
-				return productHelper.syncProducts(products, elasticsearch);
-			});
-	}
-
-	if (fetchAction) {
-		return fetchAction(contentItem, contentType.type)
-			.then(function(populatedContent) {
-				syncAction(populatedContent, elasticsearch);
-			}, function(err) {
-				throw err;
-			});
-	}
-
-	syncAction(contentItem, elasticsearch);
-}
-
-function onContentCreated(contentItem) {
+	console.log(elasticsearch);
 	try {
-		handleUpdate(contentItem, "sync");
-	} catch (err) {
-		console.log(err);
-	}
-}
-
-function onContentUpdated(contentItem) {
-	try {
-		handleUpdate(contentItem, "sync");
+		docHelper.syncDoc(contentItem, elasticsearch);
 	} catch (err) {
 		console.log(err);
 	}
 }
 
 function onContentRemoved(contentItem) {
+	var contentType = contentTypes.verifyType(contentItem.meta.contentType);
+
+	if (!contentType) {
+		return console.log("CONTENTTYPE NOT ALLOWED", contentType);
+	}
+	var elasticsearch = require("../helpers/elastic");
 	try {
-		handleUpdate(contentItem, "remove");
+		docHelper.removeDoc(contentItem, elasticsearch);
 	} catch (err) {
 		console.log(err);
 	}
 }
 
 module.exports.start = function start() {
+	console.log('start listeners');
 	Emitter.on("content.created", onContentCreated);
 	Emitter.on("content.updated", onContentUpdated);
 	Emitter.on("content.removed", onContentRemoved);
