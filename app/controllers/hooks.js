@@ -1,15 +1,16 @@
 var variablesHelper = require("../helpers/variables");
 var contentTypesHelper = require("../helpers/contentTypes");
+var taxonomiesHelper = require("../helpers/taxonomy");
 var elastic = require("../helpers/elastic");
 var listeners = require("../controllers/listeners");
 
 var onConfigurationChanged = function onConfigurationChanged() {
 	// Reload config
-	console.log("config reloaded");
 	variablesHelper.reload()
 		.then(function() {
 			elastic.reload();
 			contentTypesHelper.reload();
+			taxonomiesHelper.reload();
 		});
 
 };
@@ -30,7 +31,6 @@ var onEnabled = function onEnabled() {
 };
 
 var onLoadComplete = function onLoadComplete() {
-	console.log('loaded');
 	// Setup listeners
 	listeners.start();
 	onConfigurationChanged();

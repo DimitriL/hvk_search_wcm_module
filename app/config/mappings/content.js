@@ -15,6 +15,23 @@ module.exports = {
           "introtekst": {
             "type": "text"
           },
+          "afbeelding": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "text"
+              },
+              "copyright": {
+                "type": "text"
+              },
+              "onderschrift": {
+                "type": "text"
+              },
+              "alt": {
+                "type": "text"
+              }
+            }
+          },
           "locatie": {
             "type": "object", 
             "properties": {
@@ -122,6 +139,9 @@ module.exports = {
                   },
                   "gemeente": {
                     "type": "text"
+                  },
+                  "locatieId": {
+                    "type": "text"
                   }
                 }
               },          
@@ -182,7 +202,8 @@ module.exports = {
           "taxonomy" : {
             "type": "object",
             "properties" : {
-                "tags": []
+                "leeftijd": [],
+                "thema": []
             }
           }
         }

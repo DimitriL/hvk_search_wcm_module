@@ -9,6 +9,7 @@ var ContentModel = require(path.join(process.cwd(), "app/models/content"));
 var PopulateHelper = require(path.join(process.cwd(), "app/helpers/populate"));
 var languageHelper = require("./language");
 var contentTypesHelper = require("./contentTypes");
+var taxonomiesHelper = require("./taxonomy");
 
 var contentMongoQuery = function(type) {
 	return {
@@ -51,13 +52,19 @@ function fetchContent(query, fields) {
 }
 
 function fetchDoc(doc, type) {
+	type = (typeof type === "string") ? type : type.type;
 	return fetchOne(
 			_.assign(contentMongoQuery(type), {
 				uuid: typeof doc === "string" ? doc : doc.uuid,
 			}),
 			contentMongoFields
 		)
-		.then(populateDoc.bind(null, type));
+		.then(function(item){
+			return populateDoc(type, item)
+				.then(function(pDoc) {
+					return pDoc;
+				}, errHandler);
+		});
 }
 
 function populateDoc(type, doc) {
@@ -107,8 +114,7 @@ function docExists(uuid, elasticsearch) {
 }
 
 function syncDoc(doc, elasticsearch) {
-	console.log(elasticsearch);
-	return docExists(verifyUuid(doc), elasticsearch, "doc")
+	return docExists(verifyUuid(doc), elasticsearch, "content")
 		.then(function(exists) {
 			return exists ? updateDoc(doc, elasticsearch) : createDoc(doc, elasticsearch);
 		}, errHandler);
@@ -145,7 +151,7 @@ function updateDoc(doc, elasticsearch) {
 function removeDoc(doc, elasticsearch) {
 	return elasticsearch.client.delete({
 		index: elasticsearch.index,
-		type: "doc",
+		type: "content",
 		id: doc.uuid,
 	});
 }
@@ -157,17 +163,17 @@ function transformField(field) {
 }
 
 function transformDoc(doc) {
+	
 	var meta = {
 		activeLanguages: doc.meta.activeLanguages,
-		contentType: typeof doc.meta.contentType === "string" ? doc.meta.contentType : contentTypesHelper.verifyType(doc.meta.contentType)._id,
+		contentType: typeof doc.meta.contentType === "string" ? doc.meta.contentType : contentTypesHelper.verifyType(doc.meta.contentType).type,
 		created: doc.meta.created,
 		lastModified: doc.meta.lastModified,
 		publishDate: doc.meta.publishDate,
 		slug: languageHelper.verifyMultilanguage(doc.meta.slug), // @todo: return slug for active language
-		taxonomy: {
-			tags: doc.meta.taxonomy.tags,
-		},
 	};
+
+	meta.taxonomy = _parseTaxonomy(doc.meta.taxonomy.tags);
 
 	var fields = {
 		titel: doc.fields.titel,
@@ -176,7 +182,8 @@ function transformDoc(doc) {
 		paragrafen: _parseParagraphs(doc.fields.paragrafen),
 		locatie: null,
 		activiteit: null,
-		partner: null
+		partner: null,
+		afbeelding: _parseImage(doc.fields.fotoHoofding)
 	};
 
 	if(meta.contentType == 'locatie') {
@@ -190,12 +197,42 @@ function transformDoc(doc) {
 	if(meta.contentType == 'partner') {
 		fields.partner = _parsePartner(doc.fields);
 	}
-
 	return {
 		uuid: doc.uuid,
 		fields: fields,
 		meta: meta,
 	};
+}
+
+function _parseImage(image) {
+
+	if(!image) return null;
+
+	return {
+		url : image.original.asset.url || null,
+		copyright: image.meta.copyright || null,
+		onderschrift: image.meta.description || null,
+		alt: image.meta.title || null
+	};
+}
+
+function _parseTaxonomy(tags) {
+	var parsedTaxonomies = {};
+	var taxonomies = taxonomiesHelper.getTaxonomies();
+	for(var tag of tags) {
+		var tagLabel = tag.safeLabel;
+		for(var tax of taxonomies){
+			var taxLabel = tax.meta.safeLabel;
+			if(!parsedTaxonomies[taxLabel]) parsedTaxonomies[taxLabel] = [];
+			for(var txTag of tax.tags){
+				if(txTag.safeLabel == tagLabel){
+					parsedTaxonomies[taxLabel].push(tag);
+					break;
+				}
+			}
+		}
+	}
+	return parsedTaxonomies;	
 }
 
 function _parsePartner(fields) {
@@ -242,7 +279,8 @@ function _parseActiviteit(fields) {
 			straat: fields.locatieStraat || null,
 			huisnummer: fields.locatieHuisnummer || null,
 			postcode: fields.locatiePostcode || null,
-			gemeente: fields.locatiegemeent || null
+			gemeente: fields.locatieGemeente || null,
+			locatieId: fields.locatieId || null
 		},
 		organisatie: {
 			naam: fields.organisatieNaam || null,
@@ -255,13 +293,15 @@ function _parseActiviteit(fields) {
 function _parseDates(dates) {
 	if(!dates) return [];
 	var parsedDates = [];
-	for(var date of dates) {
-		parsedDates.push({
-			datumVanaf: date.value.fields.datumVanaf,
-			datumTot: date.value.fields.datumTot,
-			uurVanaf: date.value.fields.uurVanaf,
-			uurTot: date.value.fields.uurTot,
-		});
+	for(var date of dates) {		
+		if(date.value){
+			parsedDates.push({
+				datumVanaf: date.value.fields.datumVanaf,
+				datumTot: date.value.fields.datumTot,
+				uurVanaf: date.value.fields.uurVanaf,
+				uurTot: date.value.fields.uurTot,
+			});
+		}
 	}
 	return parsedDates;
 
@@ -273,7 +313,7 @@ function _parseParagraphs(paragraphs) {
 	var parsedParagraphs = [];
 
 	for(var para of paragraphs) {
-		if(indexable.includes(para.value.meta.contentType)) {
+		if(para.value && para.value.meta && indexable.includes(para.value.meta.contentType)) {
 			switch(para.value.meta.contentType){
 				case 'tekst_paragraaf':
 					parsedParagraphs.push({

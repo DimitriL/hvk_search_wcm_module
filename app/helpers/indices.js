@@ -21,14 +21,12 @@ var createIndex = function createIndex(client, index) {
 				return client.indices.create({
 					index: index.index
 				}).then(function onSuccess(){
-					console.log('index has been created')
 					return client.indices.putMapping({
 						index: index.index,
 						type: index.type,
 						body: index.mapping,
 						include_type_name: true
 					}).then(function onSuccess(){
-						console.log('mapping was added');
 						return true;						
 					}, function onError(responseError){
 						console.log('Mapping could not be added.');
@@ -70,7 +68,6 @@ var createOrUpdate = function createOrUpdate(client, index) {
 			if (errResponse.status === 404) {
 				return createIndex(client, index);
 			}
-
 			throw errResponse;
 		});
 };
