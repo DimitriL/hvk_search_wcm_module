@@ -86,7 +86,7 @@
         "jshint": "~2.9.4",
         "mocha": "~3.4.1",
         "mockery": "~2.0.0",
-        "mongoose": "~4.9.9",
+        "mongoose": "~5.9.6",
         "nock": "~9.0.13",
         "node-uuid": "~1.4.8",
         "rewire": "~2.5.2"
