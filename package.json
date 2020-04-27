@@ -1,6 +1,6 @@
 {
     "name": "@wcm/hvksearch",
-    "version": "v0.1",
+    "version": "0.1.0",
     "description": "Search module for Huis van het Kind",
     "main": "app",
     "scripts": {

@@ -1,7 +1,7 @@
 "use strict";
 
 angular
-	.module("hvksearch_0.1")
+	.module("hvksearch_0.1.0")
 	.config([
 		"$stateProvider",
 		"hvksearchConfigProvider",

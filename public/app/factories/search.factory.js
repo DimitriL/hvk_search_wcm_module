@@ -1,7 +1,7 @@
 "use strict";
 
 angular
-	.module("hvksearch_0.1.factories")
+	.module("hvksearch_0.1.0.factories")
 	.factory("hvksearchFactory", [
 		"$http",
 		"configuration",

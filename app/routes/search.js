@@ -16,11 +16,9 @@ var MethodSecurity = require("@wcm/module-helper").methodSecurity;
 // You need to specify the operation type that needs to be checked against (in this case it is the operation type specified in our package.json file).
 var PermissionsSecurity = require("@wcm/module-helper").permissionsSecurity("hvksearch");
 // Building the baseUrl based on the configuration. Every API call needs to be located after the api/ route
-var baseUrl = "/" + config.api.prefix + config.api.version + "acpaassearch";
+var baseUrl = "/" + config.api.prefix + config.api.version + "hvksearch";
 
 module.exports = function(app) {
-	app.route(baseUrl + "/search").get(authHelper.prepareMember, searchController.search);
-	app.route(baseUrl + "/suggest").get(authHelper.prepareMember, searchController.suggest);
-	// app.route(baseUrl + "/category/:uuid").get(authHelper.prepareMember, searchController.category);
+	app.route(baseUrl + "/search").post(authHelper.prepareMember, searchController.search);
 	app.route(baseUrl + "/reindex").put(ProfileSecurity, MethodSecurity.read, PermissionsSecurity, indexController.reindexAll);
 };
